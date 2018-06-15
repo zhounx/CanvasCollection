@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>canvas黑客帝国Matrix</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+<canvas></canvas>
+<script>
+    let canvas = document.querySelector('canvas')
+    let ctx = canvas.getContext('2d')
+    let matrixArr = []
+    let textSize = 16
+    let textColor = '#37b538'
+    
+    let windowWidth = canvas.width = window.innerWidth,
+        windowHeight = canvas.height = window.innerHeight,
+        matrixAmount = Math.floor(windowWidth/textSize)
+    window.addEventListener('resize',function () {
+        windowWidth = canvas.width = window.innerWidth
+        windowHeight = canvas.height = window.innerHeight
+        matrixAmount = Math.floor(windowWidth/textSize)
+    })
+
+    class Matrix{
+        constructor(index){
+            this.index = index
+            this.speed = 16
+        }
+        init(){
+            this.y = textSize*-1
+            this.x = this.index*textSize
+            this.text = String.fromCharCode(65+Math.random()*57)
+        }
+        drop(){
+            ctx.beginPath()
+            ctx.fillStyle = textColor
+            ctx.font = `${textSize}px 宋体`
+            ctx.fillText(this.text,this.x,this.y)
+            ctx.closePath()
+            if(this.y<windowHeight){
+                this.y += this.speed
+                this.text = String.fromCharCode(65+Math.random()*57)
+            }else{
+                this.init()
+            }
+        }
+    }
+
+    let main = function () {
+        for(let i=0;i<matrixAmount;i++){
+            matrixArr.push(new Matrix(i))
+            matrixArr[i].init()
+        }
+        let play = function(){
+            ctx.fillStyle = 'rgba(0,0,0,0.015)'
+            ctx.fillRect(0,0,windowWidth,windowHeight)
+            for(let i=0;i<matrixArr.length;i++){
+                matrixArr[i].drop()
+            }
+            requestAnimationFrame(play)
+        }
+        play()
+    }
+    main()
+</script>
+</body>
+</html>

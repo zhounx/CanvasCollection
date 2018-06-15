@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>canvas雨滴</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+    <canvas></canvas>
+    <script>
+        let canvas = document.querySelector('canvas')
+        let ctx = canvas.getContext('2d')
+        let windowWidth = canvas.width = window.innerWidth,
+            windowHeight = canvas.height = window.innerHeight
+        let raindrops = []
+        let raindropAmount = 100
+        window.addEventListener('resize',function () {
+            windowWidth = canvas.width = window.innerWidth;
+            windowHeight = canvas.height = window.innerHeight;
+        })
+        let random = function (min, max) {
+            if (arguments.length < 2) {
+                max = min
+                min = 0
+            } else if (min > max) {
+                min = [max, max = min][0]
+            }
+            return Math.floor(Math.random() * (max - min + 1)) + min
+        }
+
+        class Raindrop{
+            init(){
+                this.x = random(windowWidth)
+                this.y = -10
+                this.w = 2
+                this.h = 10
+                this.ySpeed = random(4,8)
+                this.r = 0
+                this.maxR = 40
+                this.rSpeed = 1.5
+                this.a = 1
+                this.minA = 0.03
+                this.aSpeed = 0.95
+                this.maxY = random(windowHeight*0.75,windowHeight*0.95)
+            }
+            drop(){
+                if(this.y<this.maxY){
+                    ctx.beginPath()
+                    ctx.fillStyle = '#fff'
+                    ctx.fillRect(this.x,this.y,this.w,this.h)
+                    ctx.closePath()
+                    this.y+=this.ySpeed
+                }else{
+                    ctx.beginPath()
+                    ctx.strokeStyle = `rgba(255,255,255,${this.a}`
+                    ctx.arc(this.x,this.y,this.r,0,2*Math.PI)
+                    ctx.stroke()
+                    ctx.closePath()
+                    this.r+=this.rSpeed
+                    if(this.r>this.maxR){
+                        if(this.a>this.minA){
+                            this.a*=this.aSpeed
+                        }else{
+                            this.init()
+                        }
+                    }
+                }
+            }
+
+        }
+
+        let main = function () {
+            for(let i=0;i<raindropAmount;i++){
+                raindrops.push(new Raindrop())
+                raindrops[i].init()
+            }
+            let play = function(){
+                ctx.fillStyle = 'rgba(0,0,0,0.1)'
+                ctx.fillRect(0,0,windowWidth,windowHeight)
+                for(let i=0;i<raindrops.length;i++){
+                    raindrops[i].drop()
+                }
+                requestAnimationFrame(play)
+            }
+            play()
+        }
+        main()
+    </script>
+</body>
+</html>

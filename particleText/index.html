@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            overflow: hidden;
+        }
+        #main-canvas {
+            display: block;
+            background: linear-gradient(#8866ee,#4477ff);
+        }
+        #text-canvas{
+            position: absolute;
+            z-index: -1;
+            background: #000;
+        }
+        input{
+            position: absolute;
+            width: 300px;
+            height: 70px;
+            font-size: 30px;
+            line-height: 70px;
+            bottom:50px;
+            left: 50%;
+            margin-left: -150px;
+            text-align: center;
+            outline:none;
+            border:none;
+            border-bottom: 2px solid #fff;
+            background: transparent;
+            color: #fff;
+        }
+        input::-webkit-input-placeholder{
+            color: #ccc;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <title>canvas粒子文字</title>
+    <script src="js/dynamics.min.js"></script>
+</head>
+<body>
+<input type="text" placeholder="请输入文字">
+<canvas id="text-canvas"></canvas>
+<canvas id="main-canvas"></canvas>
+<script src="js/index.js"></script>
+<script>
+    // console.log(dynamics)
+</script>
+</body>
+</html>

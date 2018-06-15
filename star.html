@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>canvas星空</title>
+    <style>
+        body {
+            background: #000;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<canvas></canvas>
+</body>
+</html>
+<script>
+    // canvas宽高
+    let canvas = document.querySelector('canvas')
+    let ctx = canvas.getContext('2d')
+    let windowWidth = canvas.width = window.innerWidth,
+        windowHeight = canvas.height = window.innerHeight
+    window.addEventListener('resize',function () {
+        windowWidth = canvas.width = window.innerWidth;
+        windowHeight = canvas.height = window.innerHeight;
+    })
+    let stars = [] //星星对象数组
+    let starIndex = 0 // 星星索引
+    let startAmount = 10000 // 星星个数
+    let hue = 190 //星星色调
+    // 星星canvas
+    let starCanvasRadius = 50 //星星canvas半径
+    let starCanvas = document.createElement('canvas')
+    starCanvas.width = starCanvas.height = starCanvasRadius * 2
+    let starCtx = starCanvas.getContext('2d')
+    //星星颜色
+    let starColor = starCtx.createRadialGradient(starCanvasRadius, starCanvasRadius, 0, starCanvasRadius, starCanvasRadius, starCanvasRadius)
+    starColor.addColorStop(0.025, '#fff')
+    starColor.addColorStop(0.1, `hsl(${hue},61%,33%)`)
+    starColor.addColorStop(0.25, `hsl(${hue},64%,6%)`)
+    starColor.addColorStop(1, 'transparent')
+    starCtx.fillStyle = starColor
+    starCtx.beginPath()
+    starCtx.arc(starCanvasRadius, starCanvasRadius, starCanvasRadius, 0, Math.PI * 2)
+    starCtx.fill()
+    let random = function (min, max) {
+        if (arguments.length < 2) {
+            max = min
+            min = 0
+        } else if (min > max) {
+            min = [max, max = min][0]
+        }
+        return Math.floor(Math.random() * (max - min + 1)) + min
+    }
+    let getMaxOrbitRadius = function (x, y) {
+        let max = Math.max(x, y);
+        let diameter = Math.round(Math.sqrt(max * max + max * max))//直径（窗口对角线）
+        return (diameter / 2);
+    }
+
+    class Star {
+        constructor() {
+            this.orbitRadius = random(getMaxOrbitRadius(windowWidth, windowHeight)) // 随机生成轨道半径
+            this.radius = random(50, this.orbitRadius) / 20 // 随机生成半径
+            this.lifeTime = random(500)
+            this.speed = random(this.orbitRadius) / 500000
+            this.alpha = random(10) / 10
+            stars[starIndex] = this
+            starIndex++
+        }
+
+        draw() {
+            let x = Math.sin(this.lifeTime) * this.orbitRadius + windowWidth / 2,
+                y = Math.cos(this.lifeTime) * this.orbitRadius + windowHeight / 2
+            let twincle = random(10)
+            if (twincle === 1 && this.alpha < 1) {
+                this.alpha += 0.1
+            } else if (twincle === 2 && this.alpha > 0) {
+                this.alpha -= 0.1
+            }
+            ctx.globalAlpha = this.alpha
+            ctx.drawImage(starCanvas, x, y, this.radius, this.radius)
+            this.lifeTime += this.speed
+        }
+    }
+
+    let main = function () {
+        for (let i = 0; i < startAmount; i++) {
+            new Star()
+        }
+        let play = function () {
+            ctx.clearRect(0, 0, windowWidth, windowHeight)
+            for (let i = 0; i < stars.length; i++) {
+                stars[i].draw()
+            }
+            requestAnimationFrame(play)
+        }
+        play()
+    }
+    main()
+
+</script>
