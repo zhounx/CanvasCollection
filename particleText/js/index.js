@@ -30,6 +30,7 @@ class Point {
         this.x = window.innerWidth / 2
         this.y = window.innerHeight / 2
         this.text = ''
+        this.flag =false
     }
 
     render() {
@@ -76,14 +77,15 @@ class Canvas {
 
     init() {
         let index = 0
-
         for (let i = 0; i < this.initPointAmount; i++) {
             let p = new Point()
-            let x = random(this.windowWidth), y = random(this.windowHeight), r = p.radius
+            let x = random(this.windowWidth),
+                y = random(this.windowHeight)
+            let r = p.radius
             this.points.push(p)
             let scaleDuration = 1200
             let moveDuration = random(500, 1000)
-            let move = i => {
+            let move = () => {
                 dynamics.animate(p, {
                     x,
                     y,
@@ -96,28 +98,33 @@ class Canvas {
                         if (index >= this.initPointAmount - 1) {
                             this.points.pop()
                             this.pointRandomMove()
+                            this.flag = true
                         }
                     }
                 })
             }
-            let scale = i => {
+            let scale = () => {
                 dynamics.animate(p, {
                     // alpha: random(3, 8),
-                    radius: 50
+                    radius: 60
                 }, {
                     type: dynamics.easeIn,
                     duration: scaleDuration,
-                    complete: () => {
-                        move(i)
+                    complete(){
+                        move()
                     }
                 })
             }
-            scale(i)
+            scale()
         }
         // this.pointRandomMove()
     }
 
     changeText(text) {
+        if(!this.flag){
+            return
+        }
+        this.flag = false
         if (!text) {
             text = '请输入文字'
         } else if (text.length > 10) {
@@ -151,8 +158,8 @@ class Canvas {
         let textCtx = this.textCtx
         textCtx.clearRect(0, 0, 1000, 1000)
         textCtx.font = `${fz}px Microsoft Yahei`
-        let spacing = 2
-        let textArr = text.split('')
+        // let spacing = 2
+        // let textArr = text.split('')
         // for(let i=0;i<textArr.length;i++){
         //     if(i==0){
         //         textCtx.fillText(textArr[i], 0, 0)
@@ -190,7 +197,10 @@ class Canvas {
                         orderRadius: 6
                     }, {
                         type: dynamics.easeIn,
-                        duration: moveDuration
+                        duration: moveDuration,
+                        complete:()=>{
+                            this.flag = true
+                        }
                     })
                 }
                 let scale = j => {
@@ -200,7 +210,7 @@ class Canvas {
                     }, {
                         type: dynamics.easeIn,
                         duration: scaleDuration,
-                        complete: () => {
+                        complete(){
                             move(j)
                         }
                     })
